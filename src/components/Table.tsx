@@ -28,6 +28,7 @@ export function Table() {
     const [showEndModal, setShowEndModal] = useState(false);
     const [startChips, setStartChips] = useState<Record<string, number>>({});
     const [winnerSummary, setWinnerSummary] = useState<{ winners: { id: string; name: string; delta: number }[]; heroDelta: number }>({ winners: [], heroDelta: 0 });
+    const [handTotals, setHandTotals] = useState<{ id: string; name: string; totalCommitted: number; delta: number }[]>([]);
     const prevInProgress = useRef(false);
 
     // Tick for countdown display
@@ -95,6 +96,7 @@ export function Table() {
             setShowEndModal(false);
             setLastActions({});
             setWinnerSummary({ winners: [], heroDelta: 0 });
+            setHandTotals([]);
         }, 1200);
     };
 
@@ -107,6 +109,13 @@ export function Table() {
             const winners = deltas.filter(d => d.delta === maxDelta && maxDelta > 0);
             const hero = deltas.find(d => d.id === 'p1');
             setWinnerSummary({ winners, heroDelta: hero?.delta ?? 0 });
+            const totals = state.players.map(p => ({
+                id: p.id,
+                name: p.name,
+                totalCommitted: p.totalCommitted ?? 0,
+                delta: p.chips - (startChips[p.id] ?? p.chips)
+            }));
+            setHandTotals(totals);
             setShowEndModal(true);
         }
         prevInProgress.current = state.isHandInProgress;
@@ -244,6 +253,20 @@ export function Table() {
                         ) : (
                             <p className="text-sm text-slate-200">平分彩池</p>
                         )}
+                        <div className="text-left text-xs text-slate-200 space-y-2">
+                            <div className="text-sm font-semibold text-emerald-200">本局投入 / 結果</div>
+                            <div className="space-y-1">
+                                {handTotals.map(t => (
+                                    <div key={t.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-800/70 border border-slate-700 px-3 py-2">
+                                        <span className="font-semibold text-slate-100">{t.name}</span>
+                                        <span className="text-slate-300">注 {t.totalCommitted}</span>
+                                        <span className={t.delta > 0 ? 'text-emerald-200' : t.delta < 0 ? 'text-rose-200' : 'text-slate-200'}>
+                                            {t.delta >= 0 ? `+${t.delta}` : t.delta}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                         <p className="text-sm text-slate-200">要重新開始下一局嗎？</p>
                         <div className="flex justify-center gap-3">
                             <button

@@ -1,5 +1,8 @@
 "use client";
 
+// Renders a single player's seat: name, chips, timers, hole cards, and last action.
+// For a plain-language walkthrough, see docs/components-walkthrough.md.
+
 import { Card } from './Card';
 import { Player } from '@/types/poker';
 

@@ -1,5 +1,8 @@
 "use client";
 
+// This bar holds all the buttons a human player can click (fold, check, call, raise, all-in).
+// For a plain-language walkthrough, see docs/components-walkthrough.md.
+
 import { useMemo, useState } from 'react';
 import { PlayerAction, TableState } from '@/types/poker';
 
@@ -14,6 +17,7 @@ export function ActionBar({ state, controlledPlayerId, onAction }: Props) {
     const current = state.players[state.currentPlayerIndex];
     const me = state.players.find(p => p.id === controlledPlayerId);
 
+    // Only let the human act if it's their turn, they are still active, and the hand is running.
     const myTurn = current?.id === controlledPlayerId && current.status === 'active' && state.isHandInProgress;
     const toCall = Math.max(0, state.currentBet - (me?.currentBet ?? 0));
     const canCheck = toCall === 0;

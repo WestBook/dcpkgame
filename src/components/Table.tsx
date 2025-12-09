@@ -1,5 +1,9 @@
 "use client";
 
+// The main poker table UI: starts hands, manages turns/timers, triggers auto-actions for bots,
+// and shows community cards, seats, and end-of-hand results. Plain-language guide:
+// docs/components-walkthrough.md
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActionBar } from './ActionBar';
 import { Seat } from './Seat';
@@ -31,14 +35,14 @@ export function Table() {
     const [handTotals, setHandTotals] = useState<{ id: string; name: string; totalCommitted: number; delta: number }[]>([]);
     const prevInProgress = useRef(false);
 
-    // Tick for countdown display
+    // Tick for countdown display: keeps the on-screen timer fresh while a hand is live.
     useEffect(() => {
         if (!turnDeadline || !state.isHandInProgress) return;
         const id = setInterval(() => setNow(Date.now()), 200);
         return () => clearInterval(id);
     }, [turnDeadline, state.isHandInProgress]);
 
-    // Very simple auto action for AIs (random 2-5s delay)
+    // Very simple auto action for AIs (random 2-5s delay): bots will check/call if they can, fold if short.
     useEffect(() => {
         const current = state.players[state.currentPlayerIndex];
         if (!state.isHandInProgress || intro) return;
@@ -55,7 +59,7 @@ export function Table() {
         return () => clearTimeout(id);
     }, [state, intro]);
 
-    // Turn timer: 10s auto-fold
+    // Turn timer: 10s auto-fold for whichever player is up next.
     useEffect(() => {
         if (!state.isHandInProgress || intro) return;
         const current = state.players[state.currentPlayerIndex];

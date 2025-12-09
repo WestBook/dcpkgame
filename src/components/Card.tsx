@@ -1,5 +1,8 @@
 "use client";
 
+// Displays a single playing card (or a card back if hidden/undefined).
+// Full plain-language description: docs/components-walkthrough.md.
+
 import { Card as CardType } from '@/types/poker';
 
 const suitColor: Record<CardType['suit'], string> = {
